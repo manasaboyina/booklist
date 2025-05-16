@@ -9,11 +9,10 @@ import { Book } from './models/book.model';
 export class AppComponent implements OnInit {
   title = 'my-work';
   searchFromheader?: string;
-  isSplashCompleted: boolean = true;
+  isSplashCompleted: boolean = false;
 
   onGetInput(event: string) {
     this.searchFromheader = event;
-    console.log(this.searchFromheader)
   }
 
   ngOnInit() {
