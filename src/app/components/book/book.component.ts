@@ -38,7 +38,7 @@ export class BookComponent implements OnInit {
       subTitle: [''],
       description: [''],
       authors: this.fb.array([this.createAuthor()]),  // Dynamic authors
-      saleStatus: ['NOT_FOR_SALE'],
+      saleStatus: [''],
       price: [''],
       categories: this.fb.array([this.createCategory()]),  // Dynamic categories
       thumbnailImageUrl: ['', [Validators.required, this.urlValidator()]],
@@ -225,6 +225,7 @@ export class BookComponent implements OnInit {
   }
 
   onAddBook() {
+    this.bookForm.reset();
     this.isAddBook = true;
   }
 

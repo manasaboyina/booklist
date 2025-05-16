@@ -142,7 +142,9 @@
                     Category
                 </div>
                 <div class="col-12 content">
-                    <label *ngFor="let category of selectedBook?.volumeInfo?.categories">{{category}}</label>
+                    <label
+                        *ngFor="let category of selectedBook?.volumeInfo?.categories; let isLast = last">{{category}}<label
+                            *ngIf="!isLast">,&nbsp;</label></label>
                     <label *ngIf="!selectedBook?.volumeInfo?.categories?.length">-</label>
                 </div>
             </div>
@@ -151,7 +153,7 @@
                     Version
                 </div>
                 <div class="col-12 content">
-                    {{selectedBook?.volumeInfo?.contentVersion}}
+                    {{selectedBook?.volumeInfo?.contentVersion ?? '-'}}
                 </div>
             </div>
             <div class="mt-4 row" *ngIf="selectedBook?.volumeInfo?.dimensions">
@@ -310,10 +312,12 @@
                         </div>
                         <div
                             *ngIf="bookForm.get('thumbnailImageUrl')?.invalid && bookForm.get('thumbnailImageUrl')?.touched">
-                            <small *ngIf="bookForm.get('thumbnailImageUrl')?.hasError('required')" class="background-red">
+                            <small *ngIf="bookForm.get('thumbnailImageUrl')?.hasError('required')"
+                                class="background-red">
                                 *Thumbnail Image URL is required.
                             </small>
-                            <small *ngIf="bookForm.get('thumbnailImageUrl')?.hasError('invalidUrl')" class="background-red">
+                            <small *ngIf="bookForm.get('thumbnailImageUrl')?.hasError('invalidUrl')"
+                                class="background-red">
                                 *Please enter a valid URL.
                             </small>
                         </div>
