@@ -1,0 +1,9 @@
+<div class="row" *ngIf="!isSplashCompleted">
+    <app-splashscreen></app-splashscreen>
+</div>
+<div  *ngIf="isSplashCompleted">
+    <div class="position_doc_sticky">
+        <app-header class="header" (searchInput)="onGetInput($event)"></app-header>
+    </div>
+    <app-book class="body" [searchString]="searchFromheader"></app-book>
+</div>

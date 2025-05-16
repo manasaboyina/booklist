@@ -1,0 +1,351 @@
+<div *ngIf="!isLoading">
+    <div class="container-fluid">
+        <div class="row m-2 d-flex justify-content-end mt-3">
+            <div class="col-12 col-sm-8 col-md-7 col-lg-4 col-xl-4">
+                <button class="btn btn-outline-secondary" type="button" (click)="onAddBook()">
+                    Add Book <i class="bi bi-bag-heart"></i></button> &nbsp;
+                <button class="btn btn-outline-secondary" type="button" (click)="onClickWishList()">
+                    WishList <i class="bi bi-heart-fill background-red"></i></button> &nbsp;
+                <button *ngIf="showClear && !isMobile" class="btn btn-outline-secondary" type="button"
+                    (click)="onClickClear()">
+                    Clear&nbsp;<i class="bi bi-x-circle"></i></button>
+            </div>
+            <div class="col-12 mt-3">
+                <button *ngIf="showClear && isMobile" class="btn btn-outline-secondary" type="button"
+                    (click)="onClickClear()">
+                    Clear&nbsp;<i class="bi bi-x-circle"></i></button>
+            </div>
+        </div>
+
+        <div class="card border-0 mt-2">
+            <div class="card-body">
+                <div class="row d-flex justify-content-center align-items-center ">
+                    <div *ngFor="let book of books"
+                        class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4   col-xxl-4 card_details">
+                        <img src="{{book.volumeInfo.imageLinks?.smallThumbnail ?? '../assets/images/noimage.jpeg'}}"
+                            (click)="onModalOpen(book)" class="img-thumbnail" />
+                        <div class="card-footer">
+                            <div class="col-11 ">
+                                <label class="ellipsis">{{book?.volumeInfo?.title}}</label>
+                            </div>
+                            <div class="col-1">
+                                <i [ngClass]="book.isAddedToWIshlist ? 'bi bi-heart-fill background-red' : 'bi bi-heart'"
+                                    (click)="onAddWishlist(book)"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center" *ngIf="!books?.length && !isLoading">
+                        No records
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="isLoading">
+    <app-loader></app-loader>
+</div>
+
+<!-- Modal shown when isModalOpen is true -->
+<div *ngIf="isModalOpen" class="custom-modal-overlay">
+    <div class="custom-modal">
+        <div class="custom-modal-header">
+            <span class="close-btn" (click)="onModalClose()">&times;</span>
+        </div>
+        <div class="custom-modal-body">
+            <div class="row mb-5">
+                <div class="col-12 title">
+                    <strong> {{ selectedBook?.volumeInfo?.title }}</strong>
+                    <div>
+                        <label> {{ selectedBook?.volumeInfo?.subtitle }}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <label>Publisher: {{ selectedBook?.volumeInfo?.publisher }}</label>
+                </div>
+                <div class="col-12">
+                    <label>Author(s):&nbsp;</label>
+                    <label *ngFor="let author of selectedBook?.volumeInfo?.authors; let isLast = last">
+                        {{ author }}<label *ngIf="!isLast">,&nbsp;</label> </label>
+                </div>
+                <div class="col-12">
+                    <label>Published Date: {{ selectedBook?.volumeInfo?.publishedDate | date:'dd-MM-yyyy' }}</label>
+                </div>
+            </div>
+            <div class="mt-2 image_details">
+                <img src="{{selectedBook?.volumeInfo?.imageLinks?.thumbnail ?? '../assets/images/noimage.jpeg'}}" />
+            </div>
+            <div class="row mt-2 mb-4 ">
+                <div class="col-3 display-flex widgets col-lg-1 col-xl-1" *ngIf="selectedBook?.saleInfo?.isEbook">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                    <div>
+                        Ebook
+                    </div>
+                </div>
+                <div class="col-1 col-lg-1 col-xl-1 display-flex">
+                    <label class="pipe"></label>
+                </div>
+                <div class="col-3 col-lg-1 col-xl-1 widgets display-flex">
+                    {{selectedBook?.volumeInfo?.pageCount}}
+                    <div>
+                        Pages
+                    </div>
+                </div>
+                <div class="col-1 col-lg-1 col-xl-1 display-flex">
+                    <label class="pipe"></label>
+                </div>
+                <div class="col-4  col-lg-1 col-xl-1 widgets display-flex"
+                    (click)="onClickMore(selectedBook?.volumeInfo?.infoLink)">
+                    <i class="bi bi-three-dots-vertical"></i>
+                    <div>
+                        More Info
+                    </div>
+                </div>
+            </div>
+            <div class="row mt- 4 mb-5">
+                <div class="col-12 col-md-4 mt-2 col-lg-4 col-xl-4" *ngIf="selectedBook?.saleInfo?.retailPrice?.amount">
+                    <button class="buy_button" (click)="onClickBuy()">
+                        {{selectedBook?.saleInfo?.retailPrice?.amount}}/-</button>
+                </div>
+                <div class="col-12 col-md-4 mt-2 col-lg-4 col-xl-4"
+                    *ngIf="!selectedBook?.saleInfo?.retailPrice?.amount">
+                    <button class="buy_button">
+                        {{selectedBook?.saleInfo?.saleability}}</button>
+                </div>
+                <div class="col-12 col-md-4 mt-2 col-lg-4 col-xl-4">
+                    <button class="free_sample" (click)="onClickFreeSample()">
+                        Free Sample
+                    </button>
+                </div>
+                <div class="col-12 col-md-4 mt-2 col-lg-4 col-xl-4">
+                    <button [ngClass]="selectedBook?.isAddedToWIshlist ? 'free_sample background-red':'free_sample'"
+                        (click)="onAddWishlist(selectedBook)">
+                        {{selectedBook?.isAddedToWIshlist ? 'Remove from wishlist' : 'Add to wishlist'}}
+                    </button>
+                </div>
+            </div>
+            <div class="mt-2 row">
+                <div class="col-12 sideheading">
+                    About this <label *ngIf="selectedBook?.saleInfo?.isEbook;else notebook">ebook</label><ng-template
+                        #notebook>book</ng-template>
+                </div>
+                <div class="col-12 content">
+                    {{selectedBook?.volumeInfo?.description ? selectedBook?.volumeInfo?.description : 'No description
+                    available'}}
+                </div>
+            </div>
+            <div class="mt-4 row">
+                <div class="col-12 sideheading">
+                    Category
+                </div>
+                <div class="col-12 content">
+                    <label *ngFor="let category of selectedBook?.volumeInfo?.categories">{{category}}</label>
+                    <label *ngIf="!selectedBook?.volumeInfo?.categories?.length">-</label>
+                </div>
+            </div>
+            <div class="mt-4 row">
+                <div class="col-12 sideheading">
+                    Version
+                </div>
+                <div class="col-12 content">
+                    {{selectedBook?.volumeInfo?.contentVersion}}
+                </div>
+            </div>
+            <div class="mt-4 row" *ngIf="selectedBook?.volumeInfo?.dimensions">
+                <div class="col-12 sideheading">
+                    Dimensions
+                </div>
+                <div class="col-12 content">
+                    Height - {{selectedBook?.volumeInfo?.dimensions?.height}}
+                    Width - {{selectedBook?.volumeInfo?.dimensions?.width}}
+                </div>
+            </div>
+            <div class="mt-4 row">
+                <div class="col-12 sideheading">
+                    Maturity Rating
+                </div>
+                <div class="col-12 content">
+                    {{selectedBook?.volumeInfo?.maturityRating ?? '-'}}
+                </div>
+            </div>
+            <div class="mt-4 row">
+                <div class="col-12 sideheading">
+                    <label *ngIf="!selectedBook?.accessInfo?.pdf">No</label> Available PDF
+                </div>
+                <div class="col-12 content" *ngIf="selectedBook?.accessInfo?.pdf?.isAvailable; else nopdf">
+                    <label class="pdf_preview"
+                        (click)="onClickDownload(selectedBook?.accessInfo?.pdf?.acsTokenLink)">Click here to open
+                        preview</label>
+                </div>
+                <ng-template #nopdf>
+                    <div>No pdf available</div>
+                </ng-template>
+            </div>
+        </div>
+
+        <div class="custom-modal-footer">
+            <button class="btn btn-light" (click)="onModalClose()">Close</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="custom-modal-overlay" *ngIf="pdfViewer?.length">
+    <div class="custom-modal">
+        <div class="custom-modal-header">
+            <span class="close-btn" (click)="onPdfViewerClose()">&times;</span>
+        </div>
+        <div class="custom-modal-body">
+            <ng-container>
+                <ngx-doc-viewer [url]="pdfViewer" viewer="google" class="ngxdocviewer"> </ngx-doc-viewer>
+            </ng-container>
+        </div>
+    </div>
+</div>
+
+<div class="custom-modal-overlay" *ngIf="isAddBook">
+    <div class="custom-modal">
+        <div class="custom-modal-header">
+            <span class="close-btn" (click)="onPdfViewerClose()">&times;</span>
+        </div>
+        <div class="custom-modal-body form">
+            <div class="container">
+                <form [formGroup]="bookForm" (ngSubmit)="onSubmit()">
+                    <div class="mt-2 row">
+                        <div class="col-8">
+                            <label for="bookTitle">Book Title:</label>
+                            <input id="bookTitle" formControlName="bookTitle" required>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 row">
+                        <div class="col-8">
+                            <label for="subTitle">Subtitle:</label>
+                            <input id="subTitle" formControlName="subTitle">
+                        </div>
+                    </div>
+                    <div class="mt-4 row">
+                        <div class="col-8">
+                            <label for="description">Description:</label>
+                            <input id="description" formControlName="description">
+                        </div>
+                    </div>
+                    <div class="mt-4 row">
+                        <div class="col-8">
+                            <label for="pagecount">Page Count:</label>
+                            <input id="pagecount" type="number" formControlName="pagecount">
+                        </div>
+                    </div>
+
+                    <div formArrayName="authors" class="mt-4 row">
+                        <div *ngFor="let author of authors.controls; let i = index" class="col-8">
+                            <div class="row">
+                                <div [formGroupName]="i" class="col-8">
+                                    <label for="authorName">Author {{ i + 1 }}:</label>
+                                    <input id="authorName" formControlName="name" placeholder="Author Name" required>
+                                </div>
+                                <div class="col add_buttons" *ngIf="authors.controls.length > 1">
+                                    <button type="button" (click)="removeItem('author', i)">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 add_buttons">
+                            <button type="button" (click)="addAuthor()">Add Author</button>
+                        </div>
+                    </div>
+                    <!-- <div formArrayName="imageUrls" class="mt-2 row">
+                        <div *ngFor="let imageUrl of imageUrls.controls; let i = index" class="col-8">
+                            <div class="row">
+                                <div [formGroupName]="i" class="col-8">
+                                    <label for="imageUrl">Image URL {{ i + 1 }}:</label>
+                                    <input id="imageUrl" formControlName="url" placeholder="Image URL" required>
+                                </div>
+                                <div class="col add_buttons" *ngIf="imageUrls.controls.length > 1">
+                                    <button type="button" (click)="removeItem('image', i)">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 add_buttons">
+                            <button type="button" (click)="addImageUrl()">Add Image URL</button>
+                        </div>
+                    </div> -->
+                    <div class="mt-4 row">
+                        <label for="saleStatus">Sale Status:</label>
+                        <div class="row">
+                            <label class="col radiobuttons">
+                                <input type="radio" formControlName="saleStatus" value="FREE"> Free
+                            </label>
+                            <label class="col radiobuttons">
+                                <input type="radio" formControlName="saleStatus" value="NOT_FOR_SALE"> Not for Sale
+                            </label>
+                            <label class="col radiobuttons">
+                                <input type="radio" formControlName="saleStatus" value="FOR_SALE"> For Sale
+                            </label>
+                        </div>
+                    </div>
+                    <div formArrayName="categories" class="mt-4 row">
+                        <div *ngFor="let category of categories.controls; let i = index" class="col-8">
+                            <div class="row">
+                                <div [formGroupName]="i" class="col-8">
+                                    <label for="category">Category {{ i + 1 }}:</label>
+                                    <input id="category" formControlName="category" placeholder="Category Name"
+                                        required>
+                                </div>
+                                <div class="col add_buttons" *ngIf="categories.controls.length > 1">
+                                    <button type="button" (click)="removeItem('category', i)">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 add_buttons">
+                            <button type="button" (click)="addCategory()">Add Category</button>
+                        </div>
+                    </div>
+                    <div class="mt-4 row">
+                        <div class="col-8">
+                            <label for="thumbnailImageUrl">Thumbnail Image URL:</label>
+                            <input id="thumbnailImageUrl" formControlName="thumbnailImageUrl" required>
+                        </div>
+                        <div
+                            *ngIf="bookForm.get('thumbnailImageUrl')?.invalid && bookForm.get('thumbnailImageUrl')?.touched">
+                            <small *ngIf="bookForm.get('thumbnailImageUrl')?.hasError('required')" class="background-red">
+                                *Thumbnail Image URL is required.
+                            </small>
+                            <small *ngIf="bookForm.get('thumbnailImageUrl')?.hasError('invalidUrl')" class="background-red">
+                                *Please enter a valid URL.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="mt-4 row">
+                        <div class="col-8">
+                            <label for="publishDate">Publish Date:</label>
+                            <input type="date" id="publishDate" formControlName="publishDate" required>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 row">
+                        <div class="col-8">
+                            <label for="publisher">Publisher:</label>
+                            <input id="publisher" formControlName="publisher" required>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 row">
+                        <div class="col-8">
+                            <label for="previewLink">Preview Link:</label>
+                            <input id="previewLink" formControlName="previewLink" required>
+                        </div>
+                    </div>
+
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-3">
+                            <button class="buy_button" type="submit" [disabled]="bookForm.invalid">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

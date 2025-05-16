@@ -1,0 +1,19 @@
+<div class="row margin-top ">
+    <div class="input-group mb-3 col-12 col-sm-8">
+        <div class="display-flex">
+            <img class="logo" src="../../../assets/images/logo.webp" />
+        </div> &nbsp;
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">
+                <i class="bi bi-search-heart"></i>
+            </span>
+        </div>
+        <input type="text" class="form-control" aria-describedby="basic-addon1" placeholder="what are you looking for?"
+            (keyup)="onChange($event)" (search)="onSearchClear($event)">
+    </div>
+
+    <div class="col right_section" *ngIf="!isMobile">
+        <button class="signup">Sign up</button>
+        <button class="login">Log in</button>
+    </div>
+</div>

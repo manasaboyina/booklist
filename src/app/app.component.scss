@@ -1,0 +1,18 @@
+.header {
+    // padding: 1%;
+    margin: 0px;
+    // box-shadow: 0px 0px 8px rgba(183, 183, 183, 0.25);
+}
+
+.body {
+    height: 100% !important;
+    // padding: ;
+}
+
+.position_doc_sticky {
+    position: sticky;
+    top: 0;
+    background: #f3e8ff;
+    z-index: 1;
+    padding: 1em 1em 1em 0.3em;
+}
